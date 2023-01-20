@@ -2,6 +2,14 @@
 -include_lib("eunit/include/eunit.hrl").
 -include("erlcloud_aws.hrl").
 
+%% These two macros are here to deceive the Erlang compiler into thinking that
+%% they may not match everything. Because, given the way in which ?assertNotException is
+%% defined in assert.hrl, if we would just put _ instead, the compiler will correctly point out
+%% that "this clause cannot match because a previous clause at line 70 always matches"
+%% ¯\_(ツ)_/¯
+-define(ANY_CLASS, Class when Class =:= error; Class =:= throw; Class =:= exit).
+-define(ANY_TERM, Term when is_tuple(Term); not is_tuple(Term)).
+
 request_test_() ->
     {foreach,
      fun start/0,
@@ -67,9 +75,9 @@ request_retry_test(_) ->
               meck:sequence(erlcloud_httpc, request, 6, ResponseSeq),
               erlcloud_aws:aws_request(get, "host", "/", [], config())
         end,
-    [?_assertNotException(_, _, <<"OkBody">> = MeckAndRequest([Response400, Response200])),
-     ?_assertNotException(_, _, <<"OkBody">> = MeckAndRequest([Response400, Response500, Response200])),
-     ?_assertNotException(_, _, <<"OkBody">> = MeckAndRequest([Response429, Response200])),
+    [?_assertNotException(?ANY_CLASS, ?ANY_TERM, <<"OkBody">> = MeckAndRequest([Response400, Response200])),
+     ?_assertNotException(?ANY_CLASS, ?ANY_TERM, <<"OkBody">> = MeckAndRequest([Response400, Response500, Response200])),
+     ?_assertNotException(?ANY_CLASS, ?ANY_TERM, <<"OkBody">> = MeckAndRequest([Response429, Response200])),
      ?_assertMatch({error, {http_error, 400, "Bad Request", _ErrorMsg}},
                    MeckAndRequest({[Response400, Response500, Response400, Response200], xml4}))
      ].
