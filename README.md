@@ -1,4 +1,4 @@
-# erlcloud: AWS APIs library for Erlang #
+# erlcloud: AWS APIs library for https://github.com/cateringtoothersllc-caring-net
 
 This library is not developed or maintained by AWS thus lots of functionality is still missing comparing to [aws-cli](https://aws.amazon.com/cli/) or [boto](https://github.com/boto/boto).
 Required functionality is being added upon request.
